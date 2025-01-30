@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Variables
+REPO_PATH="$HOME/my-git-repo"
+COMMIT_MSG="Auto-commit on $(date '+%Y-%m-%d %H:%M:%S')"
+
+# Navigate to repo and commit changes
+cd $REPO_PATH || exit
+git add .
+git commit -m "$COMMIT_MSG"
+git push origin main
+
+echo "Changes pushed successfully!"
+
