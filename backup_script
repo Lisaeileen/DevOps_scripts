@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Backup script to automate file or directory backups
+
+# Set variables
+SOURCE="/path/to/source"       # Replace with the directory or file you want to back up
+DESTINATION="/path/to/backup" # Replace with the destination directory for backups
+DATE=$(date +%Y-%m-%d_%H-%M-%S) # Timestamp for the backup
+BACKUP_NAME="backup_$DATE.tar.gz" # Backup filename
+LOG_FILE="/var/log/backup_script.log" # Log file path
+
+# Function to log messages
+log_message() {
+    echo "[$(date +%Y-%m-%d_%H:%M:%S)] $1" | tee -a "$LOG_FILE"
+}
+
+# Start backup
+log_message "Backup process started."
+
+# Check if source exists
+if [ ! -e "$SOURCE" ]; then
+    log_message "Error: Source path '$SOURCE' does not exist. Exiting."
+    exit 1
+fi
+
+# Create the destination directory if it does not exist
+if [ ! -d "$DESTINATION" ]; then
+    mkdir -p "$DESTINATION"
+    if [ $? -ne 0 ]; then
+        log_message "Error: Failed to create destination directory '$DESTINATION'. Exiting."
+        exit 1
+    fi
+fi
+
+# Perform the backup
+tar -czf "$DESTINATION/$BACKUP_NAME" "$SOURCE"
+if [ $? -eq 0 ]; then
+    log_message "Backup successful. File saved as '$DESTINATION/$BACKUP_NAME'."
+else
+    log_message "Error: Backup process failed."
+    exit 1
+fi
+
+# Clean up old backups (older than 7 days)
+find "$DESTINATION" -type f -name "backup_*.tar.gz" -mtime +7 -exec rm {} \;
+if [ $? -eq 0 ]; then
+    log_message "Old backups cleaned up."
+else
+    log_message "Warning: Failed to clean up old backups."
+fi
+
+log_message "Backup process completed."
+exit 0
