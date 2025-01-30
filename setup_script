@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Update system packages
+echo "Updating system packages..."
+sudo yum update && sudo apt upgrade -y
+
+# Install essential packages
+echo "Installing necessary tools..."
+sudo yum install -y docker.io kubectl ansible awscli
+
+# Add user to Docker group
+echo "Adding user to Docker group..."
+sudo usermod -aG docker $USER
+
+# Configure SSH keys
+if [ ! -f ~/.ssh/id_rsa ]; then
+    echo "Generating SSH keys..."
+    ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa -N ""
+fi
+
+echo "Setup complete!"
+
