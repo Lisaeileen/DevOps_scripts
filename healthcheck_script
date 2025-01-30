@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# List all running containers
+echo "Checking Docker container health..."
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}"
+
+# Find unhealthy containers
+UNHEALTHY=$(docker ps --filter "health=unhealthy" --format "{{.Names}}")
+
+if [ -n "$UNHEALTHY" ]; then
+    echo "Warning: Unhealthy containers detected!"
+    echo "$UNHEALTHY"
+    # Send alert via email, Slack, etc. (extend as needed)
+fi
+
